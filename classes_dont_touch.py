@@ -1,3 +1,5 @@
+import random, time, pickle, os
+
 class School:
     def __init__(self, name):
         self.name = name
