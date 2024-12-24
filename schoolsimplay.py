@@ -151,8 +151,7 @@ Your classes begin tomorrow""")
     student.sleep()
 
 
-    print(f"""
-Before going to your first day of school in {student.grade}th grade, would you like to add curriculum to your classes? (True, False): """, end="")
+    print(f"""Before going to your first day of school in {student.grade}th grade, would you like to add curriculum to your classes? (True, False): """, end="")
     add_curriculum_bool = input()
     if add_curriculum_bool == "True":
         student.add_curriculum()
