@@ -1,4 +1,90 @@
-from classes_dont_touch import *
+import random, time, pickle, os
+
+class School:
+    def __init__(self, name):
+        self.name = name
+        self.students = []
+        print("School", name)
+
+    def add_student(self, student):
+        self.students.append(student)
+
+class Student:
+    def __init__(self, name, grade, school):
+        self.name = name
+        self.grade = grade
+        self.school = school
+        self.school.students.append(self)
+        self.classes = []
+        self.gradebook1 = []
+        self.gradebook2 = []
+        self.gradebook3 = []
+        self.gradebook4 = []
+        self.totalgradebook = []
+
+    def add_class(self, class_obj):
+        self.classes.append(class_obj)
+
+    def ask(self, curriculum_questions, class_obj):
+        qs = 0
+        questions = list(curriculum_questions)
+        random.shuffle(questions)
+        for question in questions:
+            if qs > 3:
+                print("That's enough questions.")
+                break
+            print("Question:", question, "Your Answer: ", end="")
+            given_answer = input()
+            score = class_obj.evaluate_response(question, given_answer)
+            qs += 1
+            exec(f"self.gradebook{quarter}.append(score)")
+            self.totalgradebook.append(score)
+        print(f"\nYou are done learning curriculum for {class_obj.name} class.")
+
+    def learn(self, class_obj):
+        if class_obj not in self.classes:
+            print("You cannot learn this class")
+        else:
+            print("Learning", class_obj.name, "\n")
+            if len(class_obj.curriculum) > 0:
+                self.ask(class_obj.curriculum.keys(), class_obj)
+
+    def sleep(self):
+        print("You are sleeping\n")
+
+    def add_curriculum(self):
+        for class_name in self.classes:
+            yesno = input(f"(True/False) Would you like to add curriculum for {class_name.name}? ")
+            if yesno:
+                print("""First, it will ask you to enter a question. Then input the answer.
+If you would like to finish, for the question enter 'done'.\n""")
+                while True:
+                    question = input("Enter a question or 'done': ")
+                    if question == 'done':
+                        break
+                    else:
+                        answer = input("Enter an answer for that question: ")
+                        class_name.add_curriculum(question, answer)
+                print(f"Added curriculum for class {class_name.name}")
+            else:
+                print(f"Skipped adding curriculum for {class_name.name}")
+        print("\nDone adding curriculum for classes\n")
+
+class Class:
+    def __init__(self, name):
+        self.name = name
+        self.curriculum = {}
+
+    def add_curriculum(self, question, answer):
+        self.curriculum[question] = answer
+
+    def evaluate_response(self, question, given_answer):
+        if self.curriculum[question] == given_answer:
+            print("The given answer was correct")
+            return 100
+        else:
+            print(f"The given answer was wrong. Correct answer: {self.curriculum[question]}")
+            return 0
 
 # STARTING SIMULATION
 
@@ -62,10 +148,57 @@ Before going to your first day of school in {student.grade}th grade, would you l
         print("Skipped adding curriculum")
 
 day = 1
+quarter = 1
+
+def get_average_of_list(list_to_get):
+    sum = 0
+    count = len(list_to_get)
+    for item in list_to_get:
+        sum += item
+    return sum/count
+
+def join_lists(*args):
+    full_list = []
+    for list_to_use in args:
+        for object_to_use in list_to_use:
+            full_list.append(object_to_use)
 
 while True:
-    print("It is a new day. Day", day, "\n")
+    if day == 45:
+        quarter = 2
+    if day == 90:
+        quarter = 3
+    if day == 135:
+        quarter = 4
+    print("It is a new day. Day", day, f"Quarter {quarter}.\n")
     time.sleep(3)
+    if day in [45, 90, 135, 180]:
+        if day == 45:
+            print("Grades for Q1:", student.gradebook1)
+            print("Total Score: "+str(get_average_of_list(student.gradebook1))+"%\n")
+        elif day == 90:
+            print("Grades for Q2:", student.gradebook2)
+            print("Total Score: " + str(get_average_of_list(student.gradebook2)) + "%\n")
+        elif day == 135:
+            print("Grades for Q3:", student.gradebook3)
+            print("Total Score: " + str(get_average_of_list(student.gradebook3)) + "%\n")
+        elif day == 180:
+            print("Grades for Q4:", student.gradebook4)
+            print("Total Score: " + str(get_average_of_list(student.gradebook4)) + "%\n")
+            time.sleep(3)
+            print(f"Total School Year {student.grade}th Grade Score: " + str(get_average_of_list(student.totalgradebook)) + "%\n")
+            time.sleep(3)
+            print("SUMMER BREAK!")
+            time.sleep(3)
+            print("SUMMER BREAK! IS over.")
+            print("Updating grade...")
+            student.grade += 1
+            time.sleep(3)
+            day = 1
+            quarter = 1
+            print("It is a new day. Day 1 Quarter 1.")
+            print(f"Welcome to {student.grade}th Grade.")
+
     print("You are at school")
     todays_class_list = student.classes
     random.shuffle(todays_class_list)
