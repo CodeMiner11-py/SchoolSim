@@ -90,17 +90,20 @@ class Class:
 # STARTING SIMULATION
 
 def load_simulation(filename):
-    global school, student
+    global school, student, progress
     path_folder = filename+"/"
     school_path = os.path.join("game_" + filename, "school.schoolsim")
     student_path = os.path.join("game_" + filename, "student.schoolsim")
-    password_path = os.path.join("game_" + filename, "student.schoolsim")
+    password_path = os.path.join("game_" + filename, "password.schoolsim")
+    progress_path = os.path.join("game_" + filename, "progress.schoolsim")
     with open(school_path, 'rb') as load_from:
         school = pickle.load(load_from)
     with open(student_path, 'rb') as load_from:
         student = pickle.load(load_from)
     with open(password_path, 'rb') as load_from:
         password = pickle.load(load_from)
+    with open(progress_path, 'rb') as load_from:
+        progress = pickle.load(load_from)
     print(f"\nYour game was loaded successfully! Just to confirm, you need to enter your password.")
     password_given = input("Enter your password: ")
     if password_given == password:
@@ -122,7 +125,8 @@ if pickle_choice.lower() == "true":
         load_simulation(filename)
 
 if pickle_choice.lower() != 'true':
-    school = School(input("Please enter the name of the school you are applying to: "))
+    progress = [1, 1]
+    school = School(input("Please enter the name of the school you are joining: "))
     student = Student(input("Please enter your name: "), input("Please enter your grade: "), school, password=input("Choose a password: "))
     school.add_student(student)
     classes_joined = []
@@ -158,8 +162,7 @@ Your classes begin tomorrow""")
     else:
         print("Skipped adding curriculum")
 
-day = 1
-quarter = 1
+day, quarter = progress
 
 def get_average_of_list(list_to_get):
     sum = 0
@@ -234,12 +237,15 @@ while True:
                 school_path = os.path.join("game_" + filechoice, "school.schoolsim")
                 student_path = os.path.join("game_" + filechoice, "student.schoolsim")
                 password_path = os.path.join("game_" + filechoice, "password.schoolsim")
+                progress_path = os.path.join("game_" + filechoice, "progress.schoolsim")
                 with open(school_path, 'wb') as dump_to:
                     pickle.dump(school, dump_to)
                 with open(student_path, 'wb') as dump_to:
                     pickle.dump(student, dump_to)
                 with open(password_path, 'wb') as dump_to:
                     pickle.dump(student.password, dump_to)
+                with open(progress_path, 'wb') as dump_to:
+                    pickle.dump([day, quarter], dump_to)
                 print(f"""\nYour game '{filechoice}' was successfully saved.
 Do not delete any files in the 'game_{filechoice}/' folder.
 Thanks for playing School Simulator.""")
