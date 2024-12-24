@@ -10,7 +10,7 @@ class School:
         self.students.append(student)
 
 class Student:
-    def __init__(self, name, grade, school):
+    def __init__(self, name, grade, school, password):
         self.name = name
         self.grade = grade
         self.school = school
@@ -21,6 +21,7 @@ class Student:
         self.gradebook3 = []
         self.gradebook4 = []
         self.totalgradebook = []
+        self.password = password
 
     def add_class(self, class_obj):
         self.classes.append(class_obj)
@@ -93,11 +94,22 @@ def load_simulation(filename):
     path_folder = filename+"/"
     school_path = os.path.join("game_" + filename, "school.schoolsim")
     student_path = os.path.join("game_" + filename, "student.schoolsim")
+    password_path = os.path.join("game_" + filename, "student.schoolsim")
     with open(school_path, 'rb') as load_from:
         school = pickle.load(load_from)
     with open(student_path, 'rb') as load_from:
         student = pickle.load(load_from)
-    print(f"\nYour game was loaded successfully! Just to confirm, your name is {student.name}.\n")
+    with open(password_path, 'rb') as load_from:
+        password = pickle.load(load_from)
+    print(f"\nYour game was loaded successfully! Just to confirm, you need to enter your password.")
+    password_given = input("Enter your password: ")
+    if password_given == password:
+        print("Identity authenticated! Loading game")
+    else:
+        print("Access denied")
+        print("game ending")
+        time.sleep(3)
+        quit()
 
 pickle_choice = input("(True/False) Would you like to import a saved game? ")
 if pickle_choice.lower() == "true":
@@ -111,7 +123,7 @@ if pickle_choice.lower() == "true":
 
 if pickle_choice.lower() != 'true':
     school = School(input("Please enter the name of the school you are applying to: "))
-    student = Student(input("Please enter your name: "), input("Please enter your grade: "), school)
+    student = Student(input("Please enter your name: "), input("Please enter your grade: "), school, password=input("Choose a password: "))
     school.add_student(student)
     classes_joined = []
     print("Enter a class name to join a class, or type 'done' to finish.")
@@ -210,7 +222,7 @@ while True:
     choices_yesno = input()
     if choices_yesno.lower() == "choices":
         while True:
-            choice = input("Choices: savegame, quitmenu, play, addtocurriculum, deletegame: ")
+            choice = input("Choices: savegame, quitmenu, play, addtocurriculum, deletegame, passwordchange: ")
             if choice == 'quitmenu':
                 print("Exiting menu\n")
                 break
@@ -222,10 +234,13 @@ while True:
                 os.mkdir(folder_new)
                 school_path = os.path.join("game_" + filechoice, "school.schoolsim")
                 student_path = os.path.join("game_" + filechoice, "student.schoolsim")
+                password_path = os.path.join("game_" + filechoice, "password.schoolsim")
                 with open(school_path, 'wb') as dump_to:
                     pickle.dump(school, dump_to)
                 with open(student_path, 'wb') as dump_to:
                     pickle.dump(student, dump_to)
+                with open(password_path, 'wb') as dump_to:
+                    pickle.dump(student.password, dump_to)
                 print(f"""\nYour game '{filechoice}' was successfully saved.
 Do not delete any files in the 'game_{filechoice}/' folder.
 Thanks for playing School Simulator.""")
@@ -247,6 +262,12 @@ Thanks for playing School Simulator.""")
                     print("Exiting...")
                     time.sleep(5)
                     quit()
+            elif choice == "passwordchange":
+                passwordold = input("Enter your old password to change it: ")
+                if student.password == passwordold:
+                    student.password = input("Authenticated! New password: ")
+                else:
+                    print("Access denied")
 
     student.sleep()
     day += 1
