@@ -91,11 +91,10 @@ class Class:
 
 def load_simulation(filename):
     global school, student, progress
-    path_folder = filename+"/"
-    school_path = os.path.join("game_" + filename, "school.schoolsim")
-    student_path = os.path.join("game_" + filename, "student.schoolsim")
-    password_path = os.path.join("game_" + filename, "password.schoolsim")
-    progress_path = os.path.join("game_" + filename, "progress.schoolsim")
+    school_path = os.path.join(filename, "school.schoolsim")
+    student_path = os.path.join(filename, "student.schoolsim")
+    password_path = os.path.join(filename, "password.schoolsim")
+    progress_path = os.path.join(filename, "progress.schoolsim")
     with open(school_path, 'rb') as load_from:
         school = pickle.load(load_from)
     with open(student_path, 'rb') as load_from:
